@@ -133,6 +133,23 @@ body {
 }
 
 
+
+/* ---------- premium animations ---------- */
+@keyframes gradX { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+.anim-gradient {
+  background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent1));
+  background-size: 200% 100%;
+  animation: gradX 5s linear infinite;
+}
+@keyframes shine { 0% { transform: translateX(-120%) skewX(-18deg); } 60%, 100% { transform: translateX(220%) skewX(-18deg); } }
+.card-shine { position: relative; overflow: hidden; }
+.card-shine::after {
+  content: ""; position: absolute; top: 0; bottom: 0; width: 45%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.09), transparent);
+  animation: shine 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
 /* ---------- size helpers (win over tailwind utilities) ---------- */
 .btn-lg { padding: 13px 26px !important; font-size: 15px !important; }
 .btn-sm { padding: 8px 16px !important; font-size: 13px !important; }

@@ -3,23 +3,26 @@ export const site = {
   tagline: "Correlation & Multiple Regression, powered by AI",
   subtitle:
     "A maths project on how area, rooms and location drive house prices — interact with the model, chat with the AI assistant, and explore 2,518 real Hyderabad listings.",
-  student: "Toganti Pruthvi Raj",
-  regNo: "REG-NO", // TODO: fill
+  student: "Pruthvi Raj",
+  regNo: "4157",
   college: "College Name", // TODO: fill
   department: "Department of Mathematics",
   year: "2025-26",
-  // ---- Guide (LG) placeholder ----
+  className: "206",
+  // ---- Guide (LG) ----
   guide: {
-    name: "Guide Name", // TODO: fill (LG name)
+    name: "LG No. 11",
     role: "Project Guide",
     photo: "", // TODO: /team/guide.jpg — drop file in public/team/
   },
-  // ---- 5-6 group members: fill names + registration numbers ----
-  members: Array.from({ length: 6 }, (_, i) => ({
-    name: `Member ${i + 1}`,
-    regNo: `REG-NO-${i + 1}`,
-    photo: "",
-  })),
+  // ---- Group members ----
+  members: [
+    { name: "Bhairavesh", regNo: "4160", photo: "" },
+    { name: "Irfan", regNo: "4161", photo: "" },
+    { name: "Rahul", regNo: "4169", photo: "" },
+    { name: "Krishna", regNo: "4165", photo: "" },
+    { name: "Pruthvi Raj", regNo: "4157", photo: "" },
+  ],
 };
 
 export const llm = {
