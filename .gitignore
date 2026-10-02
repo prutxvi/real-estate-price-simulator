@@ -1,0 +1,18 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Node / Next
+web/node_modules/
+web/.next/
+web/out/
+
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+web/.env.local
+
+# OS junk
+.DS_Store
