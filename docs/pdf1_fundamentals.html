@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Real Estate Price Simulator — Fundamentals & Project Overview</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 18mm 16mm;
+    @bottom-center { content: counter(page) " / " counter(pages); font-size: 8.5pt; color: #64748b; font-family: Helvetica, Arial, sans-serif; }
+    @top-right { content: "Real Estate Price Simulator"; font-size: 8pt; color: #94a3b8; font-family: Helvetica, Arial, sans-serif; } }
+  * { box-sizing: border-box; }
+  body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #0f172a; font-size: 10.2pt; line-height: 1.55; margin: 0; }
+  .cover { page-break-after: always; height: 250mm; display: flex; flex-direction: column; justify-content: center; }
+  .cover .brand { display:inline-flex; align-items:center; gap:10px; font-size: 12pt; font-weight: 800; color:#059669; letter-spacing:.02em; }
+  .cover h1 { font-size: 30pt; line-height: 1.12; margin: 26px 0 10px; letter-spacing: -0.01em; }
+  .cover h1 .grad { background: linear-gradient(90deg,#059669,#0891b2); -webkit-background-clip: text; color: transparent; }
+  .cover .sub { font-size: 13.5pt; color: #475569; max-width: 150mm; }
+  .cover .meta { margin-top: 34px; border-top: 2.5px solid #10b981; padding-top: 12px; }
+  .cover .meta div { font-size: 10.5pt; color: #334155; margin: 3px 0; }
+  h2 { font-size: 16pt; color: #065f46; margin: 22px 0 8px; border-bottom: 1.5px solid #d1fae5; padding-bottom: 5px; page-break-after: avoid; }
+  h3 { font-size: 12.2pt; color: #0f172a; margin: 16px 0 5px; page-break-after: avoid; }
+  p { margin: 6px 0; text-align: justify; }
+  .formula { background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid #10b981; border-radius: 8px; padding: 9px 14px; font-family: "Cambria Math", Georgia, serif; font-size: 11.5pt; margin: 10px 0; text-align: center; }
+  .note { background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 8px 12px; font-size: 9.5pt; color: #78350f; margin: 8px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 9.2pt; page-break-inside: avoid; }
+  th { background: #065f46; color: #fff; text-align: left; padding: 5px 8px; font-weight: 600; }
+  td { border-bottom: 1px solid #e2e8f0; padding: 4.5px 8px; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  img.fig { width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; margin: 8px 0; page-break-inside: avoid; }
+  .cap { font-size: 8.6pt; color: #64748b; text-align: center; margin: 2px 0 12px; }
+  ul, ol { margin: 6px 0 6px 18px; padding: 0; }
+  li { margin: 3px 0; }
+  code { font-family: "SF Mono", Menlo, monospace; font-size: 8.8pt; background: #f1f5f9; padding: 1px 5px; border-radius: 4px; }
+  .cols { display: flow-root; } /* placeholder */
+  .pagebreak { page-break-before: always; }
+  .small { font-size: 8.8pt; color: #64748b; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="brand">PRICE<span>SIM</span> · Mathematics Project</div>
+  <h1>Real Estate <span class="grad">Price Simulator</span></h1>
+  <div class="sub">Correlation &amp; Multiple Regression applied to 2,518 real Hyderabad property listings — a web application with an AI assistant that prices homes in Indian rupees.</div>
+  <div class="meta">
+    <div><b>Group:</b> Class 206 · Department of Mathematics · 2025–26</div>
+    <div><b>Guide:</b> LG No. 11 · <b>Members:</b> Bhairavesh (4160) · Irfan (4161) · Rahul (4169) · Krishna (4165) · Pruthvi Raj (4157)</div>
+  </div>
+</div>
+
+<h2>1. Introduction &amp; Objective</h2>
+<p>Buying a home is the single largest financial decision most people make. In Hyderabad, the price of a flat can differ by more than <b>2.5×</b> with the same area and number of rooms, purely because of the locality — a 1,500 sq ft 3-BHK costs about ₹64 L in Nizampet but ₹1.63 Cr in Banjara Hills. This project asks a simple mathematical question: <b>how do area, rooms, amenities and location drive the price of a home, and can we quantify that relationship?</b></p>
+<p>The project answers it with the statistical toolkit of a first course in regression: <b>Pearson correlation</b> to measure individual relationships, and <b>multiple linear regression</b> to model all factors together. The fitted models are deployed as an interactive web application so the mathematics can be experienced live: drag a slider, pick a locality, and see the predicted price update instantly — with the maths shown on every page.</p>
+
+<h2>2. Fundamentals — Correlation</h2>
+<h3>2.1 What correlation measures</h3>
+<p>Correlation quantifies the strength and direction of a linear relationship between two variables. The <b>Pearson product-moment coefficient r</b> is defined as the covariance of the two variables divided by the product of their standard deviations:</p>
+<div class="formula">r = Σ (xᵢ − x̄)(yᵢ − ȳ) ⁄ √[ Σ (xᵢ − x̄)² · Σ (yᵢ − ȳ)² ]</div>
+<p>Here x̄ and ȳ are the sample means. The value of r always lies in [−1, +1]: +1 is a perfect positive linear relationship, −1 a perfect inverse one, and 0 means no <i>linear</i> relationship (a curved relationship may still exist). Common rules of thumb: |r| ≥ 0.7 <i>strong</i>, ≥ 0.4 <i>moderate</i>, ≥ 0.2 <i>weak</i>, below that <i>very weak</i>.</p>
+<p>Correlation is symmetric, unit-free, and sensitive to outliers and to the range of data sampled. Critically, it measures association in isolation — it cannot tell us how a variable behaves <i>once other variables are held constant</i>. That is the job of regression.</p>
+
+<h3>2.2 Correlation with price in our data</h3>
+<img class="fig" src="figs/corr_bars.png" alt="Correlations with price">
+<table>
+  <tr><th>Feature</th><th>Pearson r with price</th><th>Strength</th><th>Interpretation</th></tr>
+  <tr><td>Carpet area (sq ft)</td><td><b>+0.829</b></td><td>Strong</td><td>Bigger homes cost more — the dominant single factor</td></tr>
+  <tr><td>Bedrooms (BHK)</td><td>+0.614</td><td>Moderate</td><td>More rooms → higher price, but area matters more</td></tr>
+  <tr><td>Swimming pool</td><td>+0.294</td><td>Weak</td><td rowspan="8">Amenities matter, but they mostly travel with area and locality</td></tr>
+  <tr><td>Gymnasium</td><td>+0.269</td><td>Weak</td></tr>
+  <tr><td>Club house</td><td>+0.250</td><td>Weak</td></tr>
+  <tr><td>24×7 security</td><td>+0.246</td><td>Weak</td></tr>
+  <tr><td>Covered parking</td><td>+0.227</td><td>Weak</td></tr>
+  <tr><td>Vaastu-compliant</td><td>+0.218</td><td>Weak</td></tr>
+  <tr><td>Resale</td><td>+0.204</td><td>Weak</td></tr>
+  <tr><td>Power backup · Lift</td><td>+0.173 · +0.153</td><td>Very weak</td></tr>
+</table>
+<img class="fig" src="figs/corr_heatmap.png" alt="Correlation heatmap">
+<div class="cap">Full correlation matrix of the 11 numeric features plus price; green is positive, red negative.</div>
+
+<h3>2.3 Why correlation alone is not enough</h3>
+<p>Three limitations motivate regression:</p>
+<ul>
+<li><b>Confounding:</b> a swimming pool is correlated with price partly because pools are installed in large, expensive, high-grade projects. Correlation cannot separate “the pool adds value” from “pools come with expensive homes”.</li>
+<li><b>No categorical locations:</b> locality is a categorical variable (48 areas) — correlation needs numeric inputs. Regression handles it with dummy variables.</li>
+<li><b>No prediction:</b> correlation gives a strength, not a number. We want: “this exact home is worth approximately ₹X”.</li>
+</ul>
+
+<h2 class="pagebreak">3. Fundamentals — Regression</h2>
+<h3>3.1 Simple linear regression</h3>
+<p>Linear regression models the expected price as a linear function of a predictor:</p>
+<div class="formula">price = β₀ + β₁ · area + ε</div>
+<p>β₀ is the intercept (expected price when area = 0), β₁ is the slope (expected price increase per additional sq ft), and ε is the error. The coefficients are chosen by <b>Ordinary Least Squares (OLS)</b> — minimising the sum of squared residuals:</div>
+<div class="formula">min β̂₀, β̂₁   Σ (yᵢ − β̂₀ − β̂₁ xᵢ)²</div>
+<p><b>R²</b> (coefficient of determination) is the share of variance in price explained by the model: R² = 1 − SS_res/SS_tot, where SS_res is the residual sum of squares and SS_tot the total sum of squares. <b>RMSE</b> (root mean squared error) reports the typical error in the original units (rupees) and is computed on data the model has never seen (the holdout set).</p>
+<p>Area alone explains <b>69.3%</b> of price variance (R² = 0.693, RMSE ₹43.99 L) — a strong start, but the remaining 30% is where rooms, amenities and above all <b>location</b> live.</p>
+
+<h3>3.2 The coefficient interpretation shift</h3>
+<p>Correlation said <i>more bedrooms → higher price</i> (r = +0.61). But once area is held constant, the regression coefficient of bedrooms is <b>negative</b> (−₹16.0 L per extra bedroom in the 11-feature model): a 4-BHK with the same carpet area as a 3-BHK is priced <i>lower per square foot</i>. This is the classic lesson of multiple regression — coefficients measure an effect <i>controlling for the other variables</i>, and can legitimately differ from (even reverse) the raw correlation.</p>
+
+<h3>3.3 Multiple regression with dummy variables</h3>
+<p>We extend the model to all numeric features and encode the locality as <b>dummy (indicator) variables</b>. For 48 named localities (plus a residual “Other” group) we create 48 dummies, each 1 if the home sits in that area and 0 otherwise (one reference locality is dropped to avoid perfect multicollinearity):</p>
+<div class="formula">price = β₀ + β₁·area + β₂·bedrooms + β₃·resale + β₄…β₁₁·amenities + Σ γₗ·1(locality = l) + ε</div>
+<p>Each γₗ is the locality’s price <i>premium</i> (or discount) relative to the reference area, after controlling for every feature. The fitted values are honest and interpretable:</p>
+<table>
+  <tr><th>Locality</th><th>Premium vs reference (₹)</th><th>Locality</th><th>Discount (₹)</th></tr>
+  <tr><td>Banjara Hills</td><td>+89.9 L</td><td>Tellapur</td><td>−21.8 L</td></tr>
+  <tr><td>Jubilee Hills</td><td>+84.1 L</td><td>Bandlaguda Jagir</td><td>−20.1 L</td></tr>
+  <tr><td>Madhapur</td><td>+41.7 L</td><td>Kollur Road</td><td>−18.7 L</td></tr>
+  <tr><td>Hitech City</td><td>+41.5 L</td><td>Patancheru</td><td>−21.0 L</td></tr>
+</table>
+<div class="note"><b>Key finding:</b> location moves a home by up to ~₹1 Cr in either direction — more than any single feature. This is the project’s central result.</div>
+
+<h3>3.4 Model progression and diagnostics</h3>
+<img class="fig" src="figs/model_bars.png" alt="Model comparison">
+<table>
+  <tr><th>Model</th><th>Variables</th><th>Holdout R²</th><th>Holdout RMSE</th></tr>
+  <tr><td>Area only</td><td>1</td><td>0.693</td><td>₹43.99 L</td></tr>
+  <tr><td>Multiple linear</td><td>11</td><td>0.709</td><td>₹42.86 L</td></tr>
+  <tr><td><b>Multiple + locality</b></td><td>11 + 48 dummies</td><td><b>0.775</b></td><td><b>₹37.68 L</b></td></tr>
+  <tr><td>Neural net (MLP)</td><td>11</td><td>0.714</td><td>₹42.46 L</td></tr>
+</table>
+<p>Residual diagnostics (residuals vs fitted, Q–Q plot) confirm the expected shape for housing data: a fan-shaped variance that grows with price (heteroscedasticity) and a slightly fat right tail from premium listings — mild deviations from homoscedasticity, acceptable at n = 2,518 and reported honestly rather than “cleaned away”.</p>
+<img class="fig" src="figs/residuals.png" alt="Residual diagnostics">
+<div class="cap">Left: residuals vs fitted (variance grows with price). Right: Q–Q plot (fat right tail).</div>
+<p>The neural network (a multilayer perceptron, 32→16 hidden neurons, ReLU) beats plain linear regression on the same 11 features (R² 0.714 vs 0.709, RMSE lower by ~1%), but cannot match the interpretable linear model <i>with locality</i> (0.775). That comparison — classical statistics vs machine learning, and the transparency of regression — is itself a finding of the project.</p>
+
+<h2 class="pagebreak">4. The Project</h2>
+<h3>4.1 What was built</h3>
+<p>Everything above is packaged as a production-quality web application built with Next.js, TypeScript and Tailwind CSS, deployed on Vercel:</p>
+<ul>
+<li><b>Live simulator</b> — sliders for carpet area and BHK, toggles for new/resale and 9 amenities, a 49-area locality dropdown; the fitted regression returns a price in ₹ with a ±1 RMSE confidence band and a per-feature ₹ breakdown (“where the price comes from”).</li>
+<li><b>All-in cost card</b> — adds Telangana stamp duty (4%) and registration (1%) to show the true purchase cost.</li>
+<li><b>AI assistant</b> — natural language in, explained price out. A parser extracts features from text like “3 BHK, 1800 sq ft in Gachibowli with pool and gym”; the model computes the price; an LLM (OpenCode Go, glm-5.3-flash) writes the buyer-friendly explanation. An offline engine answers identically when no API key is present, so demos never break.</li>
+<li><b>Interactive map</b> — all 2,518 listings plotted on an OpenStreetMap base, coloured by price, filterable by budget.</li>
+<li><b>Maths pages</b> — correlation heatmaps, coefficient tables, residual diagnostics and a print-ready report page for submission.</li>
+<li><b>Professional UI</b> — dark/light theme, glass surfaces, an SVG icon system and staggered animations.</li>
+</ul>
+<img class="fig" src="figs_pdf/simulator.png" alt="Simulator">
+<div class="cap">The simulator: live ₹ prediction for a 3-BHK in Banjara Hills with amenities, plus the tax-inclusive total.</div>
+
+<h3>4.2 The data</h3>
+<table>
+  <tr><th>Property</th><th>Value</th></tr>
+  <tr><td>Source</td><td>2,518 real Hyderabad residential listings (public listing-site data)</td></tr>
+  <tr><td>Target</td><td>Asking price, ₹20 L – ₹16.5 Cr (median ₹77.5 L, mean ₹98.2 L)</td></tr>
+  <tr><td>Features</td><td>Carpet area, bedrooms (BHK), new/resale, 9 amenity flags, locality</td></tr>
+  <tr><td>Localities</td><td>48 named areas + “Other” (Banjara Hills median ₹2.99 Cr … Nizampet ₹47.3 L)</td></tr>
+  <tr><td>Honesty note</td><td>Asking prices, not closed transactions — flagged inside the app whenever medians are shown</td></tr>
+</table>
+
+<h3>4.3 Team</h3>
+<p class="small">Class 206 · Department of Mathematics · Guided by LG No. 11 · Bhairavesh (4160), Irfan (4161), Rahul (4169), Krishna (4165), Pruthvi Raj (4157).</p>
+
+<h2>5. Conclusion</h2>
+<p>This project demonstrates the complete arc of a statistical study: <b>measure</b> (correlation), <b>model</b> (multiple regression), <b>validate</b> (holdout), <b>interpret</b> (coefficients and locality premia), and <b>communicate</b> (a live, interactive web application). The mathematics is classical and examinable — every coefficient, R² and RMSE in the app comes from the fitted models — while the delivery shows the topic in a form people can actually use: a prospective buyer can price a home in any part of Hyderabad in seconds, in rupees, and see exactly <i>why</i> the model says what it says.</p>
+
+<h3>References</h3>
+<ul class="small">
+<li>Dataset: public Hyderabad residential listings (99acres/MagicBricks scrape mirrors, GitHub public repositories).</li>
+<li>Analysis: Python 3.12 · pandas · NumPy · statsmodels · scikit-learn · matplotlib.</li>
+<li>Application: Next.js 16 · TypeScript · Tailwind CSS · Recharts · React-Leaflet · OpenCode Go (LLM).</li>
+<li>Deployment: Vercel (serverless) · GitHub Actions CI.</li>
+</ul>
+
+</body>
+</html>

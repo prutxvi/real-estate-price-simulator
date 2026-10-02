@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Real Estate Price Simulator — Backend Architecture</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm 18mm 16mm;
+    @bottom-center { content: counter(page) " / " counter(pages); font-size: 8.5pt; color: #64748b; font-family: Helvetica, Arial, sans-serif; }
+    @top-right { content: "Backend Architecture — Real Estate Price Simulator"; font-size: 8pt; color: #94a3b8; font-family: Helvetica, Arial, sans-serif; } }
+  * { box-sizing: border-box; }
+  body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; color: #0f172a; font-size: 10.2pt; line-height: 1.55; margin: 0; }
+  .cover { page-break-after: always; height: 250mm; display: flex; flex-direction: column; justify-content: center; }
+  .cover .brand { display:inline-flex; align-items:center; gap:10px; font-size: 12pt; font-weight: 800; color:#0891b2; letter-spacing:.02em; }
+  .cover h1 { font-size: 28pt; line-height: 1.12; margin: 26px 0 10px; letter-spacing: -0.01em; }
+  .cover h1 .grad { background: linear-gradient(90deg,#059669,#0891b2); -webkit-background-clip: text; color: transparent; }
+  .cover .sub { font-size: 13.5pt; color: #475569; max-width: 150mm; }
+  h2 { font-size: 15.5pt; color: #0e7490; margin: 22px 0 8px; border-bottom: 1.5px solid #cffafe; padding-bottom: 5px; page-break-after: avoid; }
+  h3 { font-size: 12pt; color: #0f172a; margin: 15px 0 5px; page-break-after: avoid; }
+  p { margin: 6px 0; text-align: justify; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 9pt; page-break-inside: avoid; }
+  th { background: #0e7490; color: #fff; text-align: left; padding: 5px 8px; font-weight: 600; }
+  td { border-bottom: 1px solid #e2e8f0; padding: 4.5px 8px; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  img.fig { width: 100%; border: 1px solid #e2e8f0; border-radius: 8px; margin: 8px 0; page-break-inside: avoid; }
+  .cap { font-size: 8.6pt; color: #64748b; text-align: center; margin: 2px 0 12px; }
+  pre { background: #0f172a; color: #d1fae5; border-radius: 8px; padding: 10px 14px; font-family: "SF Mono", Menlo, monospace; font-size: 8.4pt; line-height: 1.5; overflow: hidden; page-break-inside: avoid; }
+  code { font-family: "SF Mono", Menlo, monospace; font-size: 8.8pt; background: #f1f5f9; padding: 1px 5px; border-radius: 4px; }
+  pre code { background: none; padding: 0; }
+  ul, ol { margin: 6px 0 6px 18px; padding: 0; }
+  li { margin: 3px 0; }
+  .pagebreak { page-break-before: always; }
+  .note { background: #ecfeff; border: 1px solid #a5f3fc; border-radius: 8px; padding: 8px 12px; font-size: 9.4pt; color: #155e75; margin: 8px 0; }
+  .small { font-size: 8.8pt; color: #64748b; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <div class="brand">PRICE<span>SIM</span> · System Design Document</div>
+  <h1>Backend <span class="grad">Architecture</span></h1>
+  <div class="sub">From raw Hyderabad listings to a serverless, LLM-powered price simulator: data pipeline, model training, artifact exports, TypeScript inference engine, API routes and deployment.</div>
+</div>
+
+<h2>1. System overview</h2>
+<p>The system is a three-stage pipeline: an <b>offline Python analysis layer</b> produces trained models and JSON artifacts, a <b>Next.js application layer</b> re-implements those models in TypeScript for instant inference, and a <b>serverless deployment</b> (Vercel) serves it with an optional LLM for natural-language explanations.</p>
+<img class="fig" src="figs/pipeline.png" alt="Architecture diagram">
+<div class="cap">Figure 1 — end-to-end data flow. Everything the app serves is an artifact of the Python pipeline; the web layer only reads artifacts and computes.</div>
+
+<h2>2. Data layer</h2>
+<h3>2.1 Sources</h3>
+<table>
+  <tr><th>File</th><th>Rows</th><th>Purpose</th></tr>
+  <tr><td><code>data/hyderabad_sales.csv</code></td><td>2,518</td><td>Primary dataset: price, area, bedrooms, resale, 30 amenity columns, locality</td></tr>
+  <tr><td><code>data/hyd_v2.csv</code></td><td>19,110</td><td>Rental listings carrying locality coordinates; used once to derive (lat, long) centroids per locality</td></tr>
+  <tr><td><code>data/hyderabad_clean.csv</code></td><td>2,518</td><td>Output of prep: 11 numeric features + display locality + coordinates</td></tr>
+</table>
+<h3>2.2 Feature engineering (<code>scripts/prep_hyderabad.py</code>)</h3>
+<ul>
+<li><b>Binaries:</b> the 30 amenity columns are counts from the scrape; each is binarised to 0/1 (<code>value ≥ 1 → 1</code>).</li>
+<li><b>Feature selection:</b> 11 model features — <code>area, bedrooms, resale, pool, gym, clubhouse, security, backup, car_parking, lift, vaastu</code>.</li>
+<li><b>Locality grouping:</b> 241 raw locality strings are normalised (lowercase, non-alphanumeric stripped) and grouped into the 48 most frequent named areas plus <code>Other</code> (49 groups, drop-first coding ⇒ 48 dummies).</li>
+<li><b>Coordinates:</b> each locality maps to the mean (lat, long) of its rental listings; unmatched localities fall back to the city centre (24 rows). A DISPLAY dict restores proper names (“Banjara Hills”, “Hitech City”) after normalisation.</li>
+<li><b>Sanity filters:</b> 300 ≤ area ≤ 15,000 sq ft; ₹5 L ≤ price ≤ ₹50 Cr.</li>
+</ul>
+
+<h2 class="pagebreak">3. Model layer</h2>
+<h3>3.1 Training protocol (<code>scripts/train_export_hyderabad.py</code>)</h3>
+<p>Data is split 80/20 (deterministic, <code>random_state=42</code>); all metrics below are reported on the 20% holdout. The target is modelled in <b>INR millions</b> (<code>price_scale = 1e6</code>) for numerical stability; the app multiplies back to rupees at display time.</p>
+<table>
+  <tr><th>Model</th><th>Method</th><th>Holdout R²</th><th>RMSE</th></tr>
+  <tr><td>Area only</td><td>OLS, 1 feature</td><td>0.693</td><td>₹43.99 L</td></tr>
+  <tr><td>Multiple (11 features)</td><td>OLS</td><td>0.709</td><td>₹42.86 L</td></tr>
+  <tr><td><b>Multiple + locality</b></td><td>OLS + 48 dummy columns</td><td><b>0.775</b></td><td><b>₹37.68 L</b></td></tr>
+  <tr><td>Neural net</td><td>MLP 32→16, ReLU, Adam, early stopping</td><td>0.714</td><td>₹42.46 L</td></tr>
+</table>
+<p>The full model is fitted by <b>Ordinary Least Squares</b> on the design matrix X = [1, features, dummies]:</p>
+<pre><code>β = (XᵀX)⁻¹ Xᵀy</code></pre>
+<p>Locality coefficients are interpretable premia: <b>Banjara Hills +₹89.9 L</b>, Jubilee Hills +₹84.1 L, Madhapur +₹41.7 L … <b>Attapur −₹24.1 L</b>, Tellapur −₹21.8 L — relative to the reference locality, controlling for all features.</p>
+<h3>3.2 Artifacts (bundled into the app at build time)</h3>
+<table>
+  <tr><th>Artifact</th><th>Contents</th><th>Consumed by</th></tr>
+  <tr><td><code>linear.json</code></td><td>names/coefs/means/stds/intercept, <code>price_scale</code>, <code>zip_prefix="loc_"</code>, lin10 stats (R², adj R², F, p-values, nobs), holdout R²/RMSE</td><td>predict, breakdown, regression page, coef table, k-NN normalisation</td></tr>
+  <tr><td><code>mlp.json</code></td><td>sklearn weights <code>coefs</code> (n_in × n_out) &amp; <code>intercepts</code>, feature means/stds, holdout stats</td><td>predict (neural net card), assistant</td></tr>
+  <tr><td><code>city_map.json</code></td><td>49 localities: display name, model <code>key</code>, median price, n, lat/long</td><td>selects, parser, map chips, similar route</td></tr>
+  <tr><td><code>houses.json</code></td><td>2,518 full records (id, price, 11 features, locality, lat/long)</td><td>map dots, k-NN similar (bundled import)</td></tr>
+  <tr><td><code>stats.json / residuals.json</code></td><td>histograms, locality medians, scatter, correlation matrix, model comparison, residual/QQ samples</td><td>explore/correlation/regression pages, <code>/api/stats</code></td></tr>
+  <tr><td><code>figures/*.png</code></td><td>heatmap, residuals, scatter</td><td>report page</td></tr>
+</table>
+
+<h2 class="pagebreak">4. Application layer</h2>
+<h3>4.1 Routes</h3>
+<table>
+  <tr><th>Route</th><th>Method</th><th>What it does</th></tr>
+  <tr><td><code>/api/predict</code></td><td>POST</td><td>Features in → regression + MLP prices, ±1 RMSE band, per-feature ₹ breakdown</td></tr>
+  <tr><td><code>/api/similar</code></td><td>POST</td><td>k-NN: 10 closest real listings over standardised features</td></tr>
+  <tr><td><code>/api/assistant</code></td><td>POST</td><td>Text → parser → model → LLM narrative (falls back to template engine)</td></tr>
+  <tr><td><code>/api/stats</code></td><td>GET</td><td>Aggregated stats, correlation matrix, coefficient table, model comparison</td></tr>
+</table>
+<h3>4.2 Inference engine (<code>web/lib/predict.ts</code>)</h3>
+<p>The TypeScript engine reproduces the Python algebra exactly:</p>
+<ul>
+<li><b><code>predictLinear</code></b> — mean-centred decomposition: prediction = (intercept + Σ coef·mean over <i>all</i> columns) + Σ coef·(x − mean) + locality dummy sum. The mean-centring constant is rebuilt from the exported arrays so the two sides cannot drift apart.</li>
+<li><b><code>predictMlp</code></b> — exact MLP forward pass: feature standardisation, 32→16 ReLU hidden layers, identity output; sklearn matrices are stored (n_in × n_out) and transposed on the fly.</li>
+<li><b><code>nearestHouses</code></b> — in-memory k-NN over the standardised 11 features against all 2,518 bundled records (O(n) per query, ~2 ms).</li>
+</ul>
+<p>Sample response of <code>/api/predict</code> (1,500 sq ft, 3 BHK, amenities, Banjara Hills):</p>
+<pre><code>{
+  "linear": { "price": 16531920, "rmse": 3767898, "r2": 0.7748,
+              "band": [12764022, 20299818] },
+  "mlp":    { "price": 8244595,  "rmse": 4246259, "r2": 0.7140,
+              "band": [3998335,  12490854] },
+  "breakdown": [ { "key": "location", "label": "Locality", "amount": ... }, ... ]
+}</code></pre>
+<h3>4.3 AI assistant flow</h3>
+<ol>
+<li>Regex parser extracts area (sq ft / sq m / sq yd), BHK, resale/new, amenity keywords, and the locality by longest match against <code>city_map</code> keys.</li>
+<li>A feature payload is built and run through the same <code>predictLinear/predictMlp</code>.</li>
+<li>An OpenAI-compatible call is made to <b>OpenCode Go</b> (<code>https://opencode.ai/zen/go/v1/chat/completions</code>, model <code>glm-5.3-flash</code>) with a system prompt that hands the model the computed numbers; the response is the final narrative.</li>
+<li>If no API key is set (or the call fails), a <b>template engine</b> writes the same style of answer from the model output — the app never breaks.</li>
+</ol>
+<div class="note">Engineering details that matter: OpenCode Go requires a non-generic <code>User-Agent</code> (Cloudflare 403 otherwise) and a stable <code>x-opencode-session</code> header; the key lives only in server env vars (never git); the chosen model returns direct content (reasoning models can exhaust the token budget on inner monologue).</div>
+<h3>4.4 Tax card</h3>
+<p>All-in cost = price × (1 + (stamp_duty% + registration%)/100), with rates (4% + 1%) configurable in <code>web/lib/config.ts</code> and labelled as approximate Telangana rates.</p>
+
+<h2 class="pagebreak">5. Serverless deployment &amp; operations</h2>
+<h3>5.1 Vercel</h3>
+<ul>
+<li>Project <code>prutxvis-projects/real-estate-price-simulator</code>, alias <b>https://real-estate-price-simulator.vercel.app</b>, deployment protection off.</li>
+<li>Every model artifact is <b>bundled into the serverless functions at build time</b> — no runtime filesystem reads (Node lambdas cannot read <code>public/</code>). This constraint drove the k-NN rewrite to an in-memory import.</li>
+<li>Env vars (API key, base URL, model) are set per environment (production/preview/development).</li>
+<li>Static content (houses.json, figures) is served by the Vercel CDN.</li>
+</ul>
+<pre><code># deploy
+cd web
+vercel --prod --yes
+# local
+npm run build && PORT=3100 npm start</code></pre>
+<h3>5.2 CI (<code>.github/workflows/ci.yml</code>)</h3>
+<ul>
+<li><b>data-pipeline</b> job: installs the analysis stack, reruns prep → train → figures on every push/PR, so the committed artifacts are always reproducible.</li>
+<li><b>web-build</b> job: <code>npm ci && npm run build</code> in <code>web/</code>.</li>
+</ul>
+<h3>5.3 Engineering notes — bugs caught during development</h3>
+<table>
+  <tr><th>Bug</th><th>Symptom</th><th>Fix</th></tr>
+  <tr><td>Raw intercept + mean-centred terms double-counted the mean shift</td><td>Every price inflated by ~₹10 L</td><td>Rebuild the mean-centring constant from exported arrays</td></tr>
+  <tr><td><code>pd.get_dummies(prefix="loc_")</code> adds its own separator</td><td>Dummy columns became <code>loc__x</code>; TS lookup <code>loc_x</code> never matched</td><td>Train with <code>prefix="loc"</code> so names align</td></tr>
+  <tr><td>MLP layers iterated as (out × in) instead of sklearn’s (in × out)</td><td>NaN prices</td><td>Transpose in the forward pass</td></tr>
+  <tr><td>Map filter defaulted to the dataset minimum (₹20 L)</td><td>Map looked empty</td><td>Default to ₹2.5 Cr (~94% of listings)</td></tr>
+  <tr><td><code>fs.readFileSync(public/…)</code> in a lambda</td><td>Would 500 on Vercel</td><td>Bundle <code>houses.json</code> via import; in-memory k-NN</td></tr>
+</table>
+
+<h2>6. Repository structure</h2>
+<pre><code>real-estate-price-simulator/
+├── data/                     # raw + cleaned datasets
+├── scripts/                  # prep → train → figures pipeline + requirements.txt
+├── web/                      # Next.js app (app/, lib/, components/, public/data)
+├── docs/                     # this document, PDFs and figures
+├── screenshots/              # UI captures for the README
+├── .github/workflows/ci.yml  # pipeline + build CI
+└── LICENSE · README.md · CONTRIBUTING.md · CHANGELOG.md</code></pre>
+
+<h2>7. Future work</h2>
+<ul>
+<li>Google Maps tiles, transaction (not asking-price) data, and richer amenities such as project age and floor.</li>
+<li>Model families: regularised regression (Ridge/ElasticNet) and tree ensembles for the comparison section.</li>
+<li>Auto-deploy via Vercel git integration and per-commit preview deployments.</li>
+</ul>
+
+</body>
+</html>
