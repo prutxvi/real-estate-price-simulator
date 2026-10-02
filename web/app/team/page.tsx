@@ -1,5 +1,6 @@
 import { SectionTitle, Card, Kicker } from "@/components/ui";
 import { site } from "@/lib/config";
+import { IconCap, IconPlus } from "@/components/icons";
 
 const AVATAR_GRADS = [
   "from-emerald-400 to-teal-500",
@@ -56,7 +57,7 @@ export default function Team() {
 
       {/* guide spotlight */}
       <div className="fade-up grad-ring panel relative overflow-hidden p-6 sm:p-8">
-        <div className="pointer-events-none absolute -right-8 -top-8 text-[110px] opacity-[0.06] floaty">🎓</div>
+        <IconCap className="floaty pointer-events-none absolute -right-6 -top-6 h-32 w-32 opacity-[0.07]" strokeWidth={1.2} />
         <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
           <div className="shrink-0">
             <Avatar photo={site.guide.photo} name={site.guide.name} mono="LG" grad="from-emerald-400 to-cyan-500" size="xl" />
@@ -91,7 +92,7 @@ export default function Team() {
         <div className="panel fade-up flex min-h-[120px] items-center justify-center rounded-2xl border-2 border-dashed border-[var(--border)] p-5 text-center"
              style={{ animationDelay: `${0.08 + site.members.length * 0.09}s` }}>
           <div>
-            <div className="text-2xl opacity-60">➕</div>
+            <IconPlus className="mx-auto h-6 w-6 opacity-60" />
             <div className="mt-1 text-[12px] text-[var(--muted)]">Slot for a 6th member (optional)</div>
           </div>
         </div>

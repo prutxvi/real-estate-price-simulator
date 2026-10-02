@@ -4,6 +4,8 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { site } from "@/lib/config";
 import { useTheme } from "./theme";
+import { Logo } from "./Logo";
+import { IconRocket } from "./icons";
 
 const primary = [
   { href: "/simulator", label: "Simulator" },
@@ -33,9 +35,7 @@ export default function Nav() {
     <header className="no-print sticky top-0 z-50 border-b border-[var(--border-soft)] bg-[var(--bg)]/75 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-5 py-3">
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
-          <span className="grad-bg flex h-9 w-9 items-center justify-center rounded-xl text-[15px] shadow-[0_6px_20px_-6px_var(--glow)]">
-            🏠
-          </span>
+          <Logo />
           <span className="text-[15px] font-bold tracking-tight">
             Price<span className="grad-text">Sim</span>
           </span>
@@ -68,7 +68,7 @@ export default function Nav() {
             {theme === "dark" ? "☀️" : "🌙"}
           </button>
           <Link href="/simulator" className="btn-primary btn-sm hidden sm:inline-flex">
-            🚀 Get an estimate
+            <IconRocket className="h-4 w-4" /> Get an estimate
           </Link>
           <button
             onClick={() => setOpen(!open)}

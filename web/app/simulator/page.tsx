@@ -4,20 +4,21 @@ import { SectionTitle, Card, Chip, RSlider } from "@/components/ui";
 import cityMapJson from "@/lib/data/city_map.json";
 import { DEFAULT_FEATURES, HouseFeatures, fmtINR, fmtNum, fmtPerSqft } from "@/lib/predict";
 import { taxes } from "@/lib/config";
+import { IconHome, IconBot, IconSliders, IconReceipt, IconTrend, IconBrain } from "@/components/icons";
 
 const CM = cityMapJson as unknown as Record<string, { location: string; city: string; median_price: number; n: number; lat: number; long: number }>;
 const localities = Object.values(CM).sort((a, b) => a.city.localeCompare(b.city) || b.n - a.n);
 
-const TOGGLES: { key: keyof HouseFeatures; label: string; icon: string }[] = [
-  { key: "resale", label: "Resale property", icon: "🔑" },
-  { key: "pool", label: "Swimming pool", icon: "🏊" },
-  { key: "gym", label: "Gymnasium", icon: "🏋️" },
-  { key: "clubhouse", label: "Club house", icon: "🏛️" },
-  { key: "security", label: "24×7 security", icon: "🛡️" },
-  { key: "backup", label: "Power backup", icon: "🔋" },
-  { key: "car_parking", label: "Covered parking", icon: "🅿️" },
-  { key: "lift", label: "Lift", icon: "🛗" },
-  { key: "vaastu", label: "Vaastu-compliant", icon: "🧭" },
+const TOGGLES: { key: keyof HouseFeatures; label: string }[] = [
+  { key: "resale", label: "Resale property" },
+  { key: "pool", label: "Swimming pool" },
+  { key: "gym", label: "Gymnasium" },
+  { key: "clubhouse", label: "Club house" },
+  { key: "security", label: "24×7 security" },
+  { key: "backup", label: "Power backup" },
+  { key: "car_parking", label: "Covered parking" },
+  { key: "lift", label: "Lift" },
+  { key: "vaastu", label: "Vaastu-compliant" },
 ];
 
 export default function Simulator() {
@@ -64,7 +65,7 @@ export default function Simulator() {
       <div className="grid gap-4 lg:grid-cols-5">
         {/* controls */}
         <Card className="lg:col-span-2">
-          <h3 className="mb-1 flex items-center gap-2 text-[15px] font-bold">🎛️ Property details</h3>
+          <h3 className="mb-1 flex items-center gap-2 text-[15px] font-bold"><IconSliders className="h-4 w-4 text-[var(--accent1)]" /> Property details</h3>
           <p className="mb-4 text-[12px] text-[var(--muted)]">Move anything — the estimate recalculates instantly.</p>
           <RSlider label="Carpet area (sq ft)" value={f.area} min={300} max={10000} step={10} onChange={(v) => set({ area: v })} fmt={(v) => v.toLocaleString("en-IN")} />
           <RSlider label="Bedrooms (BHK)" value={f.bedrooms} min={1} max={8} step={1} onChange={(v) => set({ bedrooms: v })} fmt={(v) => `${Math.round(v)} BHK`} />
@@ -80,7 +81,7 @@ export default function Simulator() {
                     : "border-[var(--border)] bg-[var(--panel2)] text-[var(--text2)] hover:bg-[var(--panel2)]"
                 }`}
               >
-                {t.icon} {t.label}
+                {t.label}
                 {(f[t.key] as number) === 1 ? " ✓" : ""}
               </button>
             ))}
@@ -107,9 +108,9 @@ export default function Simulator() {
                 <Card className="grad-ring relative overflow-hidden p-lg">
                   <div className="flex items-center justify-between">
                     <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--muted)]">
-                      <span className="mr-1.5">📈</span> Regression + locality
+                      <IconTrend className="mr-1.5 inline h-4 w-4 text-[var(--accent1)]" /> Regression + locality
                     </div>
-                    <span className="floaty">🏠</span>
+<IconHome className="floaty h-6 w-6 text-[var(--accent1)]" />
                   </div>
                   <div className="mt-3 text-[34px] font-extrabold leading-none tracking-tight">{fmtINR(result.linear.price)}</div>
                   <div className="mt-2 text-[12px] text-[var(--muted)]">
@@ -126,9 +127,9 @@ export default function Simulator() {
                 <Card className="relative overflow-hidden p-lg">
                   <div className="flex items-center justify-between">
                     <div className="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--muted)]">
-                      <span className="mr-1.5">🧠</span> Neural net (AI)
+                      <IconBrain className="mr-1.5 inline h-4 w-4 text-[var(--accent2)]" /> Neural net (AI)
                     </div>
-                    <span className="floaty">🤖</span>
+<IconBot className="floaty h-6 w-6 text-[var(--accent2)]" />
                   </div>
                   <div className="mt-3 text-[34px] font-extrabold leading-none tracking-tight">{fmtINR(result.mlp.price)}</div>
                   <div className="mt-2 text-[12px] text-[var(--muted)]">R² = {result.mlp.r2.toFixed(3)} on holdout</div>
@@ -144,7 +145,7 @@ export default function Simulator() {
 
               <Card className="grad-ring relative overflow-hidden p-lg">
                 <div className="flex items-center justify-between">
-                  <h3 className="flex items-center gap-2 text-[15px] font-bold">🧾 All-in cost with taxes</h3>
+                  <h3 className="flex items-center gap-2 text-[15px] font-bold"><IconReceipt className="h-4 w-4 text-[var(--accent1)]" /> All-in cost with taxes</h3>
                   <span className="text-[10.5px] uppercase tracking-wider text-[var(--muted)]">Telangana · approx</span>
                 </div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-4">

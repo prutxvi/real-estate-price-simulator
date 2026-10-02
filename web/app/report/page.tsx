@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { SectionTitle, Card } from "@/components/ui";
 import { site } from "@/lib/config";
+import { IconPrint } from "@/components/icons";
 
 export default function Report() {
   const [data, setData] = useState<any>(null);
@@ -21,7 +22,7 @@ export default function Report() {
           desc="The full written report for submission. Charts below are rendered server-side quality — use the print button and “Save as PDF” for the hard copy."
         />
         <button onClick={() => window.print()} className="rounded-xl bg-gradient-to-r from-[var(--accent1)] to-[var(--accent2)] px-5 py-2.5 text-sm font-bold text-[var(--accent1-ink)]">
-          🖨️ Print / Save as PDF
+          <IconPrint className="h-4 w-4" /> Print / Save as PDF
         </button>
       </div>
 

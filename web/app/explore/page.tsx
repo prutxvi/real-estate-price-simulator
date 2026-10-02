@@ -6,6 +6,7 @@ import {
 } from "recharts";
 import { SectionTitle, Card, Stat } from "@/components/ui";
 import { fmtINR } from "@/lib/predict";
+import { IconHome, IconRuler, IconTrend, IconPin } from "@/components/icons";
 
 const TICK = { fill: "#8ea0b8", fontSize: 11 };
 const TOOLTIP = { background: "#0b1220", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10 };
@@ -31,10 +32,10 @@ export default function Explore() {
       />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <Stat icon="🏠" label="Mean price" value={fmtINR(stats.price.mean)} />
-        <Stat icon="📐" label="Median price" value={fmtINR(stats.price.median)} />
-        <Stat icon="↔️" label="Range" value={fmtINR(stats.price.min) + " – " + fmtINR(stats.price.max)} />
-        <Stat icon="📍" label="Localities" value={stats.price.localities} sub={`${stats.price.n.toLocaleString("en-IN")} listings`} />
+        <Stat icon={<IconHome className="h-4 w-4" />} label="Mean price" value={fmtINR(stats.price.mean)} />
+        <Stat icon={<IconRuler className="h-4 w-4" />} label="Median price" value={fmtINR(stats.price.median)} />
+        <Stat icon={<IconTrend className="h-4 w-4" />} label="Range" value={fmtINR(stats.price.min) + " – " + fmtINR(stats.price.max)} />
+        <Stat icon={<IconPin className="h-4 w-4" />} label="Localities" value={stats.price.localities} sub={`${stats.price.n.toLocaleString("en-IN")} listings`} />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">

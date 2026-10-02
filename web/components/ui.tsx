@@ -4,7 +4,7 @@ export function Card({ children, className = "" }: { children: React.ReactNode; 
   return <div className={`panel panel-hover p-5 ${className}`}>{children}</div>;
 }
 
-export function Stat({ label, value, sub, icon }: { label: string; value: React.ReactNode; sub?: string; icon?: string }) {
+export function Stat({ label, value, sub, icon }: { label: string; value: React.ReactNode; sub?: string; icon?: React.ReactNode }) {
   return (
     <div className="panel panel-hover group p-4">
       <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider muted">

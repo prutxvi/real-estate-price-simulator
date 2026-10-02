@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card, SectionTitle, Stat, Kicker } from "@/components/ui";
 import { fmtINR } from "@/lib/predict";
+import { IconChart, IconSigma, IconSliders, IconChat, IconPin, IconBrain, IconFile, IconSpark, IconRocket, IconHome, IconTarget, IconTrend, IconReceipt } from "@/components/icons";
 import { site } from "@/lib/config";
 import statsJson from "@/public/data/stats.json";
 import linearJson from "@/lib/models/linear.json";
@@ -9,18 +10,18 @@ const L = linearJson as any;
 const S = statsJson as any;
 
 const features = [
-  { icon: "📊", title: "Correlation analysis", desc: "Pearson r between price, area, rooms & amenities — with annotated heatmaps.", href: "/correlation" },
-  { icon: "🧮", title: "Multiple regression", desc: "Full equation, coefficients, R², F-test and residuals for 2,518 real listings.", href: "/regression" },
-  { icon: "🎚️", title: "Price simulator", desc: "Drag area, BHK and amenities, pick a locality — live ₹ prediction with a confidence band.", href: "/simulator" },
-  { icon: "🤖", title: "AI assistant", desc: "Type a query in plain English (“3 BHK, 1800 sq ft in Gachibowli with pool”) — get the price explained in ₹.", href: "/assistant" },
-  { icon: "🗺️", title: "Interactive map", desc: "46 Hyderabad localities colored by price. Click any listing for details.", href: "/map" },
-  { icon: "🧠", title: "Linear vs neural net", desc: "Classical regression vs an ML model — R² 0.709 vs 0.714 on the same features.", href: "/regression" },
+  { icon: <IconChart className="h-5 w-5" />, title: "Correlation analysis", desc: "Pearson r between price, area, rooms & amenities — with annotated heatmaps.", href: "/correlation" },
+  { icon: <IconSigma className="h-5 w-5" />, title: "Multiple regression", desc: "Full equation, coefficients, R², F-test and residuals for 2,518 real listings.", href: "/regression" },
+  { icon: <IconSliders className="h-5 w-5" />, title: "Price simulator", desc: "Drag area, BHK and amenities, pick a locality — live ₹ prediction with a confidence band.", href: "/simulator" },
+  { icon: <IconChat className="h-5 w-5" />, title: "AI assistant", desc: "Type a query in plain English (“3 BHK, 1800 sq ft in Gachibowli with pool”) — get the price explained in ₹.", href: "/assistant" },
+  { icon: <IconPin className="h-5 w-5" />, title: "Interactive map", desc: "46 Hyderabad localities colored by price. Click any listing for details.", href: "/map" },
+  { icon: <IconBrain className="h-5 w-5" />, title: "Linear vs neural net", desc: "Classical regression vs an ML model — R² 0.709 vs 0.714 on the same features.", href: "/regression" },
 ];
 
 const steps = [
-  { n: "01", icon: "🧾", title: "Real listing data", desc: "2,518 real Hyderabad listings — area, BHK, amenities and 46 localities." },
-  { n: "02", icon: "🧮", title: "The maths model", desc: "Pearson correlations, then multiple regression over 11 features + 48 localities (R² = 0.775)." },
-  { n: "03", icon: "🤖", title: "AI-powered explainer", desc: "Ask for any home in plain English — the model prices it and the AI explains why." },
+  { n: "01", icon: <IconFile className="h-7 w-7" />, title: "Real listing data", desc: "2,518 real Hyderabad listings — area, BHK, amenities and 46 localities." },
+  { n: "02", icon: <IconSigma className="h-7 w-7" />, title: "The maths model", desc: "Pearson correlations, then multiple regression over 11 features + 48 localities (R² = 0.775)." },
+  { n: "03", icon: <IconSpark className="h-7 w-7" />, title: "AI-powered explainer", desc: "Ask for any home in plain English — the model prices it and the AI explains why." },
 ];
 
 export default function Home() {
@@ -42,7 +43,7 @@ export default function Home() {
         </p>
         <div className="fade-up-3 mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link href="/simulator" className="btn-primary btn-lg">
-            🚀 Start pricing homes
+            <IconRocket className="h-4 w-4" /> Start pricing homes
           </Link>
           <Link href="/assistant" className="btn-ghost btn-lg">
             💬 Talk to the AI assistant
@@ -50,10 +51,10 @@ export default function Home() {
         </div>
 
         <div className="mx-auto mt-14 grid max-w-4xl grid-cols-2 gap-3 sm:grid-cols-4">
-          <Stat icon="🏠" label="Real listings" value="2,518" sub="Hyderabad, live data" />
-          <Stat icon="📍" label="Localities" value="49" sub="area dropdowns" />
-          <Stat icon="📈" label="Best model R²" value={Number(L.r2_holdout).toFixed(3)} sub="regression + location" />
-          <Stat icon="🎯" label="Error band" value={fmtINR(L.rmse_holdout)} sub="1 RMSE on holdout" />
+          <Stat icon={<IconHome className="h-4 w-4" />} label="Real listings" value="2,518" sub="Hyderabad, live data" />
+          <Stat icon={<IconPin className="h-4 w-4" />} label="Localities" value="49" sub="area dropdowns" />
+          <Stat icon={<IconTrend className="h-4 w-4" />} label="Best model R²" value={Number(L.r2_holdout).toFixed(3)} sub="regression + location" />
+          <Stat icon={<IconTarget className="h-4 w-4" />} label="Error band" value={fmtINR(L.rmse_holdout)} sub="1 RMSE on holdout" />
         </div>
       </section>
 
@@ -90,7 +91,7 @@ export default function Home() {
           {features.map((f) => (
             <Link key={f.title} href={f.href} className="group block h-full">
               <Card className="flex h-full flex-col p-lg">
-                <div className="grad-ring flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--panel2)] text-[20px]">
+                <div className="grad-ring flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--panel2)] text-[var(--accent1)]">
                   {f.icon}
                 </div>
                 <h3 className="mt-4 flex items-center gap-2 font-bold">
@@ -128,7 +129,7 @@ export default function Home() {
 
       {/* ---------- final CTA ---------- */}
       <section className="grad-ring panel relative overflow-hidden p-10 text-center sm:p-14">
-        <div className="pointer-events-none absolute -right-10 -top-10 text-[130px] opacity-[0.07] floaty">🚀</div>
+        <IconRocket className="floaty pointer-events-none absolute -right-8 -top-8 h-40 w-40 opacity-[0.06]" strokeWidth={1.2} />
         <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
           Your home, <span className="grad-text">priced in seconds</span>
         </h2>
@@ -137,7 +138,7 @@ export default function Home() {
         </p>
         <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
           <Link href="/simulator" className="btn-primary btn-lg">
-            🚀 Launch the simulator
+            <IconRocket className="h-4 w-4" /> Launch the simulator
           </Link>
           <Link href="/report" className="btn-ghost btn-lg">
             📄 View the report

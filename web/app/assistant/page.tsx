@@ -2,6 +2,7 @@
 import { useRef, useState } from "react";
 import { SectionTitle, Card, Chip } from "@/components/ui";
 import { fmtINR } from "@/lib/predict";
+import { IconBot, IconUser, IconRocket } from "@/components/icons";
 
 interface Msg {
   role: "user" | "assistant";
@@ -65,7 +66,7 @@ export default function Assistant() {
         <div className="flex h-[62vh] flex-col">
           <div className="border-b border-[var(--border-soft)] bg-[var(--panel2)]/60 px-4 py-3">
             <div className="flex items-center gap-3">
-              <div className="grad-bg flex h-9 w-9 items-center justify-center rounded-xl text-[16px]">🤖</div>
+              <div className="grad-bg flex h-9 w-9 items-center justify-center rounded-xl"><IconBot className="h-5 w-5 text-[var(--accent1-ink)]" /></div>
               <div className="flex-1">
                 <div className="text-[13.5px] font-bold leading-tight">AI Price Assistant</div>
                 <div className="flex items-center gap-1.5 text-[11px] text-[var(--muted)]">
@@ -83,7 +84,7 @@ export default function Assistant() {
             {msgs.map((m, i) => (
               <div key={i} className={"flex items-end gap-2 " + (m.role === "user" ? "justify-end" : "justify-start")}>
                 {m.role === "assistant" ? (
-                  <div className="grad-bg flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px]">🤖</div>
+                  <div className="grad-bg flex h-7 w-7 shrink-0 items-center justify-center rounded-full"><IconBot className="h-4 w-4 text-[var(--accent1-ink)]" /></div>
                 ) : null}
                 <div
                   className={
@@ -120,7 +121,7 @@ export default function Assistant() {
                   ) : null}
                 </div>
                 {m.role === "user" ? (
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--panel2)] text-[13px]">😎</div>
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[var(--panel2)] text-[var(--muted)]"><IconUser className="h-4 w-4" /></div>
                 ) : null}
               </div>
             ))}

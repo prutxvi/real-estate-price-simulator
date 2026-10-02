@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/Nav";
+import { IconLogo } from "@/components/icons";
 import { ThemeProvider } from "@/components/theme";
 import { site } from "@/lib/config";
 
@@ -35,7 +36,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-5 py-8 sm:flex-row sm:justify-between">
               <div className="text-center sm:text-left">
                 <div className="flex items-center justify-center gap-2 sm:justify-start">
-                  <span className="grad-bg flex h-6 w-6 items-center justify-center rounded-lg text-[11px]">🏠</span>
+                  <span className="grad-bg flex h-6 w-6 items-center justify-center rounded-md">
+                    <IconLogo className="h-3.5 w-3.5 text-[var(--accent1-ink)]" />
+                  </span>
                   <span className="text-[13px] font-semibold">{site.name}</span>
                 </div>
                 <p className="mt-1 text-[11.5px] text-[var(--muted)]">
