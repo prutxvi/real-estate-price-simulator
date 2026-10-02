@@ -111,14 +111,6 @@ houses = df[["id","price","area","bedrooms","resale","pool","gym","clubhouse","s
 open(f"{WEB}/public/data/houses.json", "w").write(j(houses.to_dict(orient="records")))
 print("houses.json rows:", len(houses))
 
-# ---- kNN index: standardized numeric features ----
-Zall = ((df[FEATS].astype(float) - mu) / sd).values.astype(np.float32)
-open(f"{WEB}/public/data/norm_matrix.b64", "w").write(base64.b64encode(Zall.tobytes()).decode())
-open(f"{WEB}/public/data/norm_matrix.meta.json", "w").write(j({
-    "features": FEATS, "rows": int(len(df)), "n_features": len(FEATS),
-    "dtype": "float32", "order": "row-major",
-}))
-
 # ---- residuals (full model, holdout) ----
 resid = (yv - pf.values) * PRICE_SCALE
 fitted = pf.values * PRICE_SCALE
